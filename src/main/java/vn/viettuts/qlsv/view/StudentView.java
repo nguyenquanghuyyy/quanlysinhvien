@@ -1,277 +1,706 @@
-package vn.viettuts.qlsv.view;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+package qlsv.register.view;
 
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
+import qlsv.register.entity.Student;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.WindowConstants;
-import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import vn.viettuts.qlsv.entity.Student;
-
-public class StudentView extends JFrame implements ActionListener, ListSelectionListener {
-    private static final long serialVersionUID = 1L;
-    private JButton addStudentBtn;
-    private JButton editStudentBtn;
-    private JButton deleteStudentBtn;
-    private JButton clearBtn;
-    private JButton sortStudentGPABtn;
-    private JButton sortStudentNameBtn;
-    private JScrollPane jScrollPaneStudentTable;
-    private JScrollPane jScrollPaneAddress;
-    private JTable studentTable;
-    
-    private JLabel idLabel;
-    private JLabel nameLabel;
-    private JLabel ageLabel;
-    private JLabel addressLabel;
-    private JLabel gpaLabel;
-    
-    private JTextField idField;
-    private JTextField nameField;
-    private JTextField ageField;
-    private JTextArea addressTA;
-    private JTextField gpaField;
-    
-    // định nghĩa các cột của bảng student
-    private String [] columnNames = new String [] {
-            "ID", "Name", "Age", "Address", "GPA"};
-    // định nghĩa dữ liệu mặc định của bẳng student là rỗng
-    private Object data = new Object [][] {};
-    
+/**
+ *
+ * @author PC
+ */
+public class StudentView extends javax.swing.JFrame {
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private final String[] columnNames = new String[] {
+        "Mã sinh viên", "Tên sinh viên", "Ngày sinh", "Giới tính", "Địa chỉ", "Chuyên ngành", "Kỳ học", "Số TC giới hạn"
+    };
+    /**
+     * Creates new form StudentView
+     */
     public StudentView() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        this.setTitle ("Thông tin sinh viên");
+        
+        ImageIcon icon = new ImageIcon("logo\\logo.png");
+//        ImageIcon icon = new ImageIcon("src\\main\\resources\\img\\logo.png");
+        setIconImage(icon.getImage());
+        
+        ButtonDelete.setEnabled(false);
+        ButtonEdit.setEnabled(false);
+        ButtonRefresh.setEnabled(false);
+        ButtonSearch.setEnabled(false);
     }
 
-    private void initComponents() {
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        // khởi tạo các phím chức năng
-        addStudentBtn = new JButton("Add");
-        editStudentBtn = new JButton("Edit");
-        deleteStudentBtn = new JButton("Delete");
-        clearBtn = new JButton("Clear");
-        sortStudentGPABtn = new JButton("Sort By GPA");
-        sortStudentNameBtn = new JButton("Sort By Name");
-        // khởi tạo bảng student
-        jScrollPaneStudentTable = new JScrollPane();
-        studentTable = new JTable();
-        
-        // khởi tạo các label
-        idLabel = new JLabel("Id");
-        nameLabel = new JLabel("Name");
-        ageLabel = new JLabel("Age");
-        addressLabel = new JLabel("Address");
-        gpaLabel = new JLabel("GPA");
-        
-        // khởi tạo các trường nhập dữ liệu cho student
-        idField = new JTextField(6);
-        idField.setEditable(false);
-        nameField = new JTextField(15);
-        ageField = new JTextField(6);
-        addressTA = new JTextArea();
-        addressTA.setColumns(15);
-        addressTA.setRows(5);
-        jScrollPaneAddress = new JScrollPane();
-        jScrollPaneAddress.setViewportView(addressTA);
-        gpaField = new JTextField(6);
-        
-        // cài đặt các cột và data cho bảng student
-        studentTable.setModel(new DefaultTableModel((Object[][]) data, columnNames));
-        jScrollPaneStudentTable.setViewportView(studentTable);
-        jScrollPaneStudentTable.setPreferredSize(new Dimension (480, 300));
-        
-         // tạo spring layout
-        SpringLayout layout = new SpringLayout();
-        // tạo đối tượng panel để chứa các thành phần của màn hình quản lý Student
-        JPanel panel = new JPanel();
-        panel.setSize(800, 420);
-        panel.setLayout(layout);
-        panel.add(jScrollPaneStudentTable);
-        
-        panel.add(addStudentBtn);
-        panel.add(editStudentBtn);
-        panel.add(deleteStudentBtn);
-        panel.add(clearBtn);
-        panel.add(sortStudentGPABtn);
-        panel.add(sortStudentNameBtn);
-        
-        panel.add(idLabel);
-        panel.add(nameLabel);
-        panel.add(ageLabel);
-        panel.add(addressLabel);
-        panel.add(gpaLabel);
-        
-        panel.add(idField);
-        panel.add(nameField);
-        panel.add(ageField);
-        panel.add(jScrollPaneAddress);
-        panel.add(gpaField);
-        
-        // cài đặt vị trí các thành phần trên màn hình login
-        layout.putConstraint(SpringLayout.WEST, idLabel, 10, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, idLabel, 10, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, nameLabel, 10, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, nameLabel, 40, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, ageLabel, 10, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, ageLabel, 70, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, addressLabel, 10, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, addressLabel, 100, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, gpaLabel, 10, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, gpaLabel, 200, SpringLayout.NORTH, panel);
-        
-        layout.putConstraint(SpringLayout.WEST, idField, 100, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, idField, 10, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, nameField, 100, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, nameField, 40, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, ageField, 100, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, ageField, 70, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, jScrollPaneAddress, 100, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, jScrollPaneAddress, 100, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, gpaField, 100, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, gpaField, 200, SpringLayout.NORTH, panel);
-        
-        layout.putConstraint(SpringLayout.WEST, jScrollPaneStudentTable, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, jScrollPaneStudentTable, 10, SpringLayout.NORTH, panel);
-        
-        layout.putConstraint(SpringLayout.WEST, addStudentBtn, 20, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, addStudentBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, editStudentBtn, 60, SpringLayout.WEST, addStudentBtn);
-        layout.putConstraint(SpringLayout.NORTH, editStudentBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, deleteStudentBtn, 60, SpringLayout.WEST, editStudentBtn);
-        
-        layout.putConstraint(SpringLayout.NORTH, clearBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, clearBtn, 80, SpringLayout.WEST, deleteStudentBtn);
-        
-        layout.putConstraint(SpringLayout.NORTH, deleteStudentBtn, 240, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, sortStudentGPABtn, 300, SpringLayout.WEST, panel);
-        layout.putConstraint(SpringLayout.NORTH, sortStudentGPABtn, 330, SpringLayout.NORTH, panel);
-        layout.putConstraint(SpringLayout.WEST, sortStudentNameBtn, 115, SpringLayout.WEST, sortStudentGPABtn);
-        layout.putConstraint(SpringLayout.NORTH, sortStudentNameBtn, 330, SpringLayout.NORTH, panel);
-        
-        this.add(panel);
-        this.pack();
-        this.setTitle("Student Information");
-        this.setSize(800, 420);
-        // disable Edit and Delete buttons
-        editStudentBtn.setEnabled(false);
-        deleteStudentBtn.setEnabled(false);
-        // enable Add button
-        addStudentBtn.setEnabled(true);
-    }
-    
-    public void showMessage(String message) {
-        JOptionPane.showMessageDialog(this, message);
-    }
-    
     /**
-     * hiển thị list student vào bảng studentTable
-     * 
-     * @param list
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        studentTitle = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        studentTable = new javax.swing.JTable();
+        jPanel2 = new javax.swing.JPanel();
+        LabelStrudentID = new javax.swing.JLabel();
+        TextFieldStudentID = new javax.swing.JTextField();
+        LabelStudentName = new javax.swing.JLabel();
+        TextFieldStudentName = new javax.swing.JTextField();
+        ComboBoxSearch = new javax.swing.JComboBox<>();
+        LabelDOB = new javax.swing.JLabel();
+        LabelMajor = new javax.swing.JLabel();
+        ComboBoxMajor = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        LabelGender = new javax.swing.JLabel();
+        RadioButtonMale = new javax.swing.JRadioButton();
+        RadioButtonFemale = new javax.swing.JRadioButton();
+        LabelAddress = new javax.swing.JLabel();
+        TextFieldAddress = new javax.swing.JTextField();
+        LabelTerm = new javax.swing.JLabel();
+        TextFieldLimitedCredit = new javax.swing.JTextField();
+        ComboBoxTerm = new javax.swing.JComboBox<>();
+        jLabel2 = new javax.swing.JLabel();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        ButtonSearch = new button.MyButton();
+        TextFieldSearch = new javax.swing.JTextField();
+        ButtonRefresh = new button.MyButton();
+        ButtonReturn = new button.MyButton();
+        jSeparator1 = new javax.swing.JSeparator();
+        jPanel3 = new javax.swing.JPanel();
+        ButtonClear = new button.MyButton();
+        ButtonSoftByName = new button.MyButton();
+        ButtonEdit = new button.MyButton();
+        ButtonDelete = new button.MyButton();
+        ButtonAdd = new button.MyButton();
+        StudentBackGround = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        studentTitle.setFont(new java.awt.Font("Palatino Linotype", 1, 36)); // NOI18N
+        studentTitle.setForeground(new java.awt.Color(255, 255, 255));
+        studentTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        studentTitle.setText("THÔNG TIN SINH VIÊN");
+        studentTitle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(studentTitle, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 350, -1, 70));
+
+        jPanel1.setOpaque(false);
+        jPanel1.setPreferredSize(new java.awt.Dimension(1440, 810));
+
+        studentTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        studentTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Mã sinh viên", "Tên sinh viên", "Ngày sinh", "Giới tính", "Địa chỉ", "Chuyên ngành", "Kỳ học", "Số TC giới hạn"
+            }
+        ));
+        jScrollPane1.setViewportView(studentTable);
+        if (studentTable.getColumnModel().getColumnCount() > 0) {
+            studentTable.getColumnModel().getColumn(0).setMinWidth(150);
+            studentTable.getColumnModel().getColumn(0).setMaxWidth(150);
+            studentTable.getColumnModel().getColumn(1).setMinWidth(200);
+            studentTable.getColumnModel().getColumn(1).setMaxWidth(200);
+            studentTable.getColumnModel().getColumn(2).setMinWidth(150);
+            studentTable.getColumnModel().getColumn(2).setMaxWidth(150);
+            studentTable.getColumnModel().getColumn(3).setMinWidth(80);
+            studentTable.getColumnModel().getColumn(3).setMaxWidth(80);
+            studentTable.getColumnModel().getColumn(5).setMinWidth(150);
+            studentTable.getColumnModel().getColumn(5).setMaxWidth(150);
+            studentTable.getColumnModel().getColumn(6).setMinWidth(80);
+            studentTable.getColumnModel().getColumn(6).setMaxWidth(80);
+            studentTable.getColumnModel().getColumn(7).setMinWidth(150);
+            studentTable.getColumnModel().getColumn(7).setMaxWidth(150);
+        }
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 1228, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 322, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
+        );
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 410, 1240, 330));
+
+        jPanel2.setOpaque(false);
+
+        LabelStrudentID.setForeground(new java.awt.Color(255, 255, 255));
+        LabelStrudentID.setText("Mã sinh viên:");
+
+        TextFieldStudentID.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        LabelStudentName.setForeground(new java.awt.Color(255, 255, 255));
+        LabelStudentName.setText("Tên sinh viên:");
+
+        TextFieldStudentName.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        ComboBoxSearch.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<none>", "Mã sinh viên", "Tên sinh viên", "Chuyên ngành" }));
+
+        LabelDOB.setForeground(new java.awt.Color(255, 255, 255));
+        LabelDOB.setText("Ngày sinh:");
+
+        LabelMajor.setForeground(new java.awt.Color(255, 255, 255));
+        LabelMajor.setText("Chuyên ngành:");
+
+        ComboBoxMajor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<none>", "An ninh điều tra", "Trinh sát an ninh", "Trinh sát nội bộ", "Phản gián", "Trinh sát xã hội", "An toàn thông tin", "Chất lượng cao" }));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Tìm kiếm");
+
+        LabelGender.setForeground(new java.awt.Color(255, 255, 255));
+        LabelGender.setText("Giới tính:");
+
+        RadioButtonMale.setSelected(true);
+        RadioButtonMale.setText("Nam");
+
+        RadioButtonFemale.setText("Nữ");
+
+        LabelAddress.setForeground(new java.awt.Color(255, 255, 255));
+        LabelAddress.setText("Địa chỉ:");
+
+        TextFieldAddress.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+
+        LabelTerm.setForeground(new java.awt.Color(255, 255, 255));
+        LabelTerm.setText("Kỳ học:");
+
+        TextFieldLimitedCredit.setEditable(false);
+        TextFieldLimitedCredit.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        TextFieldLimitedCredit.setFocusable(false);
+
+        ComboBoxTerm.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<none>", "Kỳ I", "Kỳ II", "Kỳ III", "Kỳ IV", "Kỳ V", "Kỳ VI", "Kỳ VII", "Kỳ VIII", "Kỳ IX", "Kỳ X" }));
+        ComboBoxTerm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ComboBoxTermActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Số TC giới hạn:");
+
+        jDateChooser1.setDateFormatString("dd/MM/yyyy"); // NOI18N
+
+        ButtonSearch.setBorder(null);
+        ButtonSearch.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Patient-Services_Icon5-removebg-preview.png"))); // NOI18N
+        ButtonSearch.setBorderColor(new java.awt.Color(242, 242, 242));
+        ButtonSearch.setColorClick(new java.awt.Color(0, 0, 0));
+        ButtonSearch.setColorOver(new java.awt.Color(204, 204, 204));
+        ButtonSearch.setRadius(24);
+        ButtonSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonSearchActionPerformed(evt);
+            }
+        });
+
+        TextFieldSearch.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        TextFieldSearch.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                TextFieldSearchFocusGained(evt);
+            }
+        });
+
+        ButtonRefresh.setBorder(null);
+        ButtonRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Refresh.png"))); // NOI18N
+        ButtonRefresh.setBorderColor(new java.awt.Color(242, 242, 242));
+        ButtonRefresh.setColorClick(new java.awt.Color(0, 0, 0));
+        ButtonRefresh.setColorOver(new java.awt.Color(204, 204, 204));
+        ButtonRefresh.setRadius(24);
+        ButtonRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonRefreshActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(LabelTerm)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(LabelStrudentID)
+                            .addComponent(LabelGender))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(TextFieldStudentID, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(RadioButtonMale)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(RadioButtonFemale))
+                            .addComponent(ComboBoxTerm, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(176, 176, 176)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(LabelAddress)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(LabelStudentName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(TextFieldStudentName, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TextFieldLimitedCredit, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(TextFieldAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 190, Short.MAX_VALUE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                                .addComponent(LabelMajor)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(jPanel2Layout.createSequentialGroup()
+                                .addComponent(LabelDOB)
+                                .addGap(29, 29, 29)))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jDateChooser1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ComboBoxMajor, 0, 154, Short.MAX_VALUE))))
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ComboBoxSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ButtonSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(TextFieldSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 306, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(ButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(258, 258, 258))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(ComboBoxSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(ButtonSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(ButtonRefresh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(TextFieldSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(30, 30, 30)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(LabelStrudentID)
+                            .addComponent(TextFieldStudentID, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(LabelStudentName)
+                            .addComponent(TextFieldStudentName, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(LabelDOB)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LabelGender)
+                        .addComponent(RadioButtonMale)
+                        .addComponent(LabelAddress)
+                        .addComponent(ComboBoxMajor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(LabelMajor)
+                        .addComponent(RadioButtonFemale))
+                    .addComponent(TextFieldAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(LabelTerm)
+                        .addComponent(ComboBoxTerm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(TextFieldLimitedCredit, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2)))
+                .addGap(179, 179, 179))
+        );
+
+        ButtonGroup buttonGroup_gender = new ButtonGroup();
+        buttonGroup_gender.add(RadioButtonMale);
+        buttonGroup_gender.add(RadioButtonFemale);
+
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 1090, 190));
+
+        ButtonReturn.setBorder(null);
+        ButtonReturn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/OIP__3_-removebg-preview.png"))); // NOI18N
+        ButtonReturn.setBorderColor(new java.awt.Color(242, 242, 242));
+        ButtonReturn.setColorClick(new java.awt.Color(0, 0, 0));
+        ButtonReturn.setColorOver(new java.awt.Color(204, 204, 204));
+        ButtonReturn.setRadius(25);
+        getContentPane().add(ButtonReturn, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 24, 24));
+        getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 330, 1380, 10));
+
+        jPanel3.setOpaque(false);
+
+        ButtonClear.setBorder(null);
+        ButtonClear.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Clear.png"))); // NOI18N
+        ButtonClear.setText("LÀM MỚI");
+        ButtonClear.setBorderColor(new java.awt.Color(153, 153, 0));
+        ButtonClear.setColorClick(new java.awt.Color(255, 255, 102));
+        ButtonClear.setColorOver(new java.awt.Color(255, 255, 204));
+        ButtonClear.setRadius(20);
+
+        ButtonSoftByName.setBorder(null);
+        ButtonSoftByName.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/sortByName.png"))); // NOI18N
+        ButtonSoftByName.setText("SẮP XẾP");
+        ButtonSoftByName.setBorderColor(new java.awt.Color(153, 102, 0));
+        ButtonSoftByName.setColorClick(new java.awt.Color(255, 153, 51));
+        ButtonSoftByName.setColorOver(new java.awt.Color(255, 204, 153));
+        ButtonSoftByName.setRadius(20);
+
+        ButtonEdit.setBorder(null);
+        ButtonEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Edit.png"))); // NOI18N
+        ButtonEdit.setText("CẬP NHẬT");
+        ButtonEdit.setBorderColor(new java.awt.Color(0, 153, 153));
+        ButtonEdit.setColorClick(new java.awt.Color(0, 204, 204));
+        ButtonEdit.setColorOver(new java.awt.Color(204, 255, 255));
+        ButtonEdit.setRadius(20);
+
+        ButtonDelete.setBorder(null);
+        ButtonDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Delete.png"))); // NOI18N
+        ButtonDelete.setText("XÓA");
+        ButtonDelete.setBorderColor(new java.awt.Color(153, 0, 0));
+        ButtonDelete.setColorClick(new java.awt.Color(255, 102, 102));
+        ButtonDelete.setColorOver(new java.awt.Color(255, 204, 204));
+        ButtonDelete.setRadius(20);
+
+        ButtonAdd.setBorder(null);
+        ButtonAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/Add.png"))); // NOI18N
+        ButtonAdd.setText("THÊM");
+        ButtonAdd.setRadius(20);
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ButtonClear, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ButtonAdd, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ButtonSoftByName, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addComponent(ButtonAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addComponent(ButtonDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(ButtonEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(ButtonSoftByName, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(31, 31, 31)
+                .addComponent(ButtonClear, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+
+        ButtonClear.setFont(new java.awt.Font("Cambria", 1, 14));
+        ButtonEdit.setFont(new java.awt.Font("Cambria", 1, 14));
+        ButtonDelete.setFont(new java.awt.Font("Cambria", 1, 14));
+        ButtonAdd.setFont(new java.awt.Font("Cambria", 1, 14));
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 418, 120, 320));
+
+        StudentBackGround.setForeground(new java.awt.Color(255, 255, 255));
+        StudentBackGround.setIcon(new javax.swing.ImageIcon(getClass().getResource("/img/StudentBackGround.png"))); // NOI18N
+        StudentBackGround.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(StudentBackGround, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1440, 810));
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void ComboBoxTermActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ComboBoxTermActionPerformed
+        String term = ComboBoxTerm.getSelectedItem().toString();
+        if (term.equals("Kỳ I")) TextFieldLimitedCredit.setText("12");
+        if (term.equals("Kỳ II")) TextFieldLimitedCredit.setText("12");
+        if (term.equals("Kỳ III")) TextFieldLimitedCredit.setText("14");
+        if (term.equals("Kỳ IV")) TextFieldLimitedCredit.setText("14");
+        if (term.equals("Kỳ V")) TextFieldLimitedCredit.setText("16");
+        if (term.equals("Kỳ VI")) TextFieldLimitedCredit.setText("16");
+        if (term.equals("Kỳ VII")) TextFieldLimitedCredit.setText("18");
+        if (term.equals("Kỳ VIII")) TextFieldLimitedCredit.setText("18");
+        if (term.equals("Kỳ IX")) TextFieldLimitedCredit.setText("20");
+        if (term.equals("Kỳ X")) TextFieldLimitedCredit.setText("20");
+    }//GEN-LAST:event_ComboBoxTermActionPerformed
+
+    private void ButtonSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonSearchActionPerformed
+        if (getComboBoxSearch().equals("<none>") && !TextFieldSearch.getText().equals("") ) {
+            ButtonSearch.setEnabled(true);
+        } else {
+            ButtonSearch.setEnabled(false);
+        }
+
+        if (getComboBoxSearch().equals("<none>") || TextFieldSearch.getText().equals("")) {
+            ButtonRefresh.setEnabled(false);
+        } else {
+            ButtonRefresh.setEnabled(true);
+        }
+    }//GEN-LAST:event_ButtonSearchActionPerformed
+
+    private void TextFieldSearchFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_TextFieldSearchFocusGained
+        ButtonSearch.setEnabled(true);
+    }//GEN-LAST:event_TextFieldSearchFocusGained
+
+    private void ButtonRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonRefreshActionPerformed
+        ButtonRefresh.setEnabled(false);
+        ButtonSearch.setEnabled(false);
+    }//GEN-LAST:event_ButtonRefreshActionPerformed
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private button.MyButton ButtonAdd;
+    private button.MyButton ButtonClear;
+    private button.MyButton ButtonDelete;
+    private button.MyButton ButtonEdit;
+    private button.MyButton ButtonRefresh;
+    private button.MyButton ButtonReturn;
+    private button.MyButton ButtonSearch;
+    private button.MyButton ButtonSoftByName;
+    private javax.swing.JComboBox<String> ComboBoxMajor;
+    private javax.swing.JComboBox<String> ComboBoxSearch;
+    private javax.swing.JComboBox<String> ComboBoxTerm;
+    private javax.swing.JLabel LabelAddress;
+    private javax.swing.JLabel LabelDOB;
+    private javax.swing.JLabel LabelGender;
+    private javax.swing.JLabel LabelMajor;
+    private javax.swing.JLabel LabelStrudentID;
+    private javax.swing.JLabel LabelStudentName;
+    private javax.swing.JLabel LabelTerm;
+    private javax.swing.JRadioButton RadioButtonFemale;
+    private javax.swing.JRadioButton RadioButtonMale;
+    private javax.swing.JLabel StudentBackGround;
+    private javax.swing.JTextField TextFieldAddress;
+    private javax.swing.JTextField TextFieldLimitedCredit;
+    private javax.swing.JTextField TextFieldSearch;
+    private javax.swing.JTextField TextFieldStudentID;
+    private javax.swing.JTextField TextFieldStudentName;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTable studentTable;
+    private javax.swing.JLabel studentTitle;
+    // End of variables declaration//GEN-END:variables
+    
+    public String getTextFieldSearch() {
+        return TextFieldSearch.getText();
+    }
+    
+    public void setTextFieldSearch(String s) {
+        TextFieldSearch.setText(s);
+    }
+    
+    public String getComboBoxSearch() {
+        return ComboBoxSearch.getSelectedItem() + "";
+    }
+    
+    public void addReturnListener(ActionListener listener) {
+        ButtonReturn.addActionListener(listener);
+    }
+    
+    public void addAddStudentListener(ActionListener listener) {
+        ButtonAdd.addActionListener(listener);
+    }
+    
+    public void addDeleteListener(ActionListener listener) {
+        ButtonDelete.addActionListener(listener);
+    }
+    
+    public void addEditListener(ActionListener listener) {
+        ButtonEdit.addActionListener(listener);
+    }
+    
+    public void addSearchListener(ActionListener listener) {
+        ButtonSearch.addActionListener(listener);
+    }
+    
+    public void addSortNameListener(ActionListener listener) {
+        ButtonSoftByName.addActionListener(listener);
+    }
+    
+    public void addRefreshListener(ActionListener listener) {
+        ButtonRefresh.addActionListener(listener);
+    }
+    
+    public void addListStudentSelectionListener(ListSelectionListener listener) {
+        studentTable.getSelectionModel().addListSelectionListener(listener);
+    }
+    
+    public void addClearListener(ActionListener listener) {
+        ButtonClear.addActionListener(listener);
+    }
+    
     public void showListStudents(List<Student> list) {
         int size = list.size();
-        // với bảng studentTable có 5 cột, 
-        // khởi tạo mảng 2 chiều students, trong đó:
+        // với bảng studentTable có 8 cột, 
+        // khởi tạo mảng 2 chiều student, trong đó:
         // số hàng: là kích thước của list student 
-        // số cột: là 5
-        Object [][] students = new Object[size][5];
+        // số cột: là 8
+        Object [][] students = new Object[size][8];
         for (int i = 0; i < size; i++) {
-            students[i][0] = list.get(i).getId();
+            students[i][0] = list.get(i).getID();
             students[i][1] = list.get(i).getName();
-            students[i][2] = list.get(i).getAge();
-            students[i][3] = list.get(i).getAddress();
-            students[i][4] = list.get(i).getGpa();
+            students[i][2] = list.get(i).getDob();
+            students[i][3] = list.get(i).getGender();
+            students[i][4] = list.get(i).getAddress();
+            students[i][5] = list.get(i).getMajor();
+            students[i][6] = list.get(i).getTerm();
+            students[i][7] = list.get(i).getLimitedCredit();
         }
-        studentTable.setModel(new DefaultTableModel(students, columnNames));
+        studentTable.setModel(new DefaultTableModel((Object[][])students, columnNames));
+        studentTable.getColumnModel().getColumn(0).setMaxWidth(150);
+        studentTable.getColumnModel().getColumn(0).setMinWidth(150);
+        studentTable.getColumnModel().getColumn(1).setMaxWidth(200);
+        studentTable.getColumnModel().getColumn(1).setMinWidth(200);
+        studentTable.getColumnModel().getColumn(2).setMaxWidth(150);
+        studentTable.getColumnModel().getColumn(2).setMinWidth(150);
+        studentTable.getColumnModel().getColumn(3).setMaxWidth(80);
+        studentTable.getColumnModel().getColumn(3).setMinWidth(80);
+        studentTable.getColumnModel().getColumn(5).setMaxWidth(150);
+        studentTable.getColumnModel().getColumn(5).setMinWidth(150);
+        studentTable.getColumnModel().getColumn(6).setMaxWidth(80);
+        studentTable.getColumnModel().getColumn(6).setMinWidth(80);
+        studentTable.getColumnModel().getColumn(7).setMaxWidth(150);
+        studentTable.getColumnModel().getColumn(7).setMinWidth(150);
     }
     
-    /**
-     * điền thông tin của hàng được chọn từ bảng student 
-     * vào các trường tương ứng của student.
-     */
     public void fillStudentFromSelectedRow() {
         // lấy chỉ số của hàng được chọn 
         int row = studentTable.getSelectedRow();
         if (row >= 0) {
-            idField.setText(studentTable.getModel().getValueAt(row, 0).toString());
-            nameField.setText(studentTable.getModel().getValueAt(row, 1).toString());
-            ageField.setText(studentTable.getModel().getValueAt(row, 2).toString());
-            addressTA.setText(studentTable.getModel().getValueAt(row, 3).toString());
-            gpaField.setText(studentTable.getModel().getValueAt(row, 4).toString());
+            
+            TextFieldStudentID.setText(studentTable.getModel().getValueAt(row, 0).toString());
+            TextFieldStudentName.setText(studentTable.getModel().getValueAt(row, 1).toString());
+            
+            try {
+                jDateChooser1.setDate(dateFormat.parse(studentTable.getModel().getValueAt(row, 2).toString()));
+            } catch (ParseException ex) {
+                Logger.getLogger(StudentView.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            if (studentTable.getModel().getValueAt(row, 3).toString().equals ("Nam")){
+                RadioButtonMale.setSelected(true);
+                RadioButtonFemale.setSelected(false);
+            } else {
+                RadioButtonMale.setSelected(false);
+                RadioButtonFemale.setSelected(true);
+            }
+            TextFieldAddress.setText(studentTable.getModel().getValueAt(row, 4).toString());
+            ComboBoxMajor.setSelectedItem(studentTable.getModel().getValueAt(row, 5).toString());
+            ComboBoxTerm.setSelectedItem(studentTable.getModel().getValueAt(row, 6).toString());
+            TextFieldLimitedCredit.setText(studentTable.getModel().getValueAt(row, 7).toString());
+            
             // enable Edit and Delete buttons
-            editStudentBtn.setEnabled(true);
-            deleteStudentBtn.setEnabled(true);
-            // disable Add button
-            addStudentBtn.setEnabled(false);
+            ButtonEdit.setEnabled(true);
+            ButtonDelete.setEnabled(true);
+            // disable buttons
+            ButtonAdd.setEnabled(false);
+            ButtonSearch.setEnabled(false);
+            ButtonSoftByName.setEnabled(false);
+            ComboBoxSearch.setEnabled(false);
+            TextFieldSearch.setEnabled(false);
+            TextFieldStudentID.setEditable(false);
+            TextFieldStudentName.setEditable(false);
+            TextFieldStudentID.setFocusable(false);
+            TextFieldStudentName.setFocusable(false);
         }
     }
-
-    /**
-     * xóa thông tin student
-     */
+    
     public void clearStudentInfo() {
-        idField.setText("");
-        nameField.setText("");
-        ageField.setText("");
-        addressTA.setText("");
-        gpaField.setText("");
-        // disable Edit and Delete buttons
-        editStudentBtn.setEnabled(false);
-        deleteStudentBtn.setEnabled(false);
-        // enable Add button
-        addStudentBtn.setEnabled(true);
-    }
-    
-    /**
-     * hiện thị thông tin student
-     * 
-     * @param student
-     */
-    public void showStudent(Student student) {
-        idField.setText("" + student.getId());
-        nameField.setText(student.getName());
-        ageField.setText("" + student.getAge());
-        addressTA.setText(student.getAddress());
-        gpaField.setText("" + student.getGpa());
+        
+        TextFieldStudentID.setText("");
+        TextFieldStudentName.setText("");
+        jDateChooser1.setDate(null);
+        RadioButtonFemale.setSelected(false);
+        RadioButtonMale.setSelected(false);
+        TextFieldAddress.setText("");
+        ComboBoxMajor.setSelectedItem("<none>");
+        ComboBoxTerm.setSelectedItem("<none>");
+        TextFieldLimitedCredit.setText("");
+        
         // enable Edit and Delete buttons
-        editStudentBtn.setEnabled(true);
-        deleteStudentBtn.setEnabled(true);
-        // disable Add button
-        addStudentBtn.setEnabled(false);
+        ButtonEdit.setEnabled(false);
+        ButtonDelete.setEnabled(false);
+        // disable buttons
+        ButtonAdd.setEnabled(true);
+        ButtonSoftByName.setEnabled(true);
+        ButtonSearch.setEnabled(false);
+        ComboBoxSearch.setEnabled(true);
+        TextFieldSearch.setEnabled(true);
+        TextFieldStudentID.setEditable(true);
+        TextFieldStudentName.setEditable(true);
+        TextFieldStudentID.setFocusable(true);
+        TextFieldStudentName.setFocusable(true);
+        studentTable.clearSelection();
     }
     
-    /**
-     * lấy thông tin student
-     * 
-     * @return
-     */
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.INFORMATION_MESSAGE);
+    }
+    
     public Student getStudentInfo() {
-        // validate student
-        if (!validateName() || !validateAge() || !validateAddress() || !validateGPA()) {
-            return null;
+        try {
+            // validate student
+            if (!validateStudentID() || !validateStudentName() || !validateDOB() || !validateGender() || !validateMajor() || !validateAddress() || !validateTerm() ) {
+                return null;
+            }
+        } catch (ParseException ex) {
+            Logger.getLogger(StudentView.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             Student student = new Student();
-            if (idField.getText() != null && !"".equals(idField.getText())) {
-                student.setId(Integer.parseInt(idField.getText()));
+            student.setID(TextFieldStudentID.getText().trim());
+            student.setName(TextFieldStudentName.getText().trim());
+            student.setDob(dateFormat.format(jDateChooser1.getDate()));
+            
+            if (RadioButtonMale.isSelected()){
+                student.setGender("Nam");
+            } else {
+                student.setGender("Nữ");
             }
-            student.setName(nameField.getText().trim());
-            student.setAge(Byte.parseByte(ageField.getText().trim()));
-            student.setAddress(addressTA.getText().trim());
-            student.setGpa(Float.parseFloat(gpaField.getText().trim()));
+            student.setAddress(TextFieldAddress.getText().trim());
+            student.setMajor(ComboBoxMajor.getSelectedItem().toString());
+            student.setTerm(ComboBoxTerm.getSelectedItem().toString());
+            student.setLimitedCredit(Integer.parseInt(TextFieldLimitedCredit.getText()));
             return student;
         } catch (Exception e) {
             showMessage(e.getMessage());
@@ -279,89 +708,78 @@ public class StudentView extends JFrame implements ActionListener, ListSelection
         return null;
     }
     
-    private boolean validateName() {
-        String name = nameField.getText();
-        if (name == null || "".equals(name.trim())) {
-            nameField.requestFocus();
-            showMessage("Name không được trống.");
+    private boolean validateStudentID() {
+        String id = "" + TextFieldStudentID.getText();
+        if ("".equals(id.trim())) {
+            TextFieldStudentID.requestFocus();
+            showMessage("Mã sinh viên không được để trống.");
             return false;
         }
         return true;
     }
     
+    private boolean validateStudentName() {
+        String name = TextFieldStudentName.getText();
+        if ("".equals(name.trim())) {
+            TextFieldStudentName.requestFocus();
+            showMessage("Tên sinh viên không được để trống.");
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean validateDOB () throws ParseException {
+        Date dob = jDateChooser1.getDate();
+        if ( dob == null){
+            jDateChooser1.requestFocus();
+            showMessage("Tên ngày sinh không được để trống và đúng dạng dd/mm/yyyy.");
+            return false;
+        }
+        if (dob.after(dateFormat.parse("31/12/2005"))){
+            jDateChooser1.requestFocus();
+            showMessage("Ngày bạn chọn vượt quá giới hạn 31/12/2005.");
+            return false;
+        }
+        return true;
+        }
+    
+    private boolean validateGender() {
+        if (!RadioButtonMale.isSelected() && !RadioButtonFemale.isSelected()) {
+            RadioButtonMale.requestFocus();
+            RadioButtonFemale.requestFocus();
+            showMessage("Giới tính không được để trống.");
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean validateMajor() {
+        String major = ComboBoxMajor.getSelectedItem().toString();
+        if ("<none>".equals(major)) {
+            ComboBoxMajor.requestFocus();
+            showMessage("Chuyên ngành không được để trống.");
+            return false;
+        }
+        return true;
+    }
+
     private boolean validateAddress() {
-        String address = addressTA.getText();
-        if (address == null || "".equals(address.trim())) {
-            addressTA.requestFocus();
-            showMessage("Address không được trống.");
+        String add = TextFieldAddress.getText();
+        if ("".equals(add.trim())) {
+            TextFieldAddress.requestFocus();
+            showMessage("Địa chỉ không được để trống.");
             return false;
         }
         return true;
     }
-    
-    private boolean validateAge() {
-        try {
-            Byte age = Byte.parseByte(ageField.getText().trim());
-            if (age < 0 || age > 100) {
-                ageField.requestFocus();
-                showMessage("Age không hợp lệ, age nên trong khoảng 0 đến 100.");
-                return false;
-            }
-        } catch (Exception e) {
-            ageField.requestFocus();
-            showMessage("Age không hợp lệ!");
+
+    private boolean validateTerm() {
+        String term = "" + ComboBoxTerm.getSelectedItem();
+        if ("<none>".equals(term)) {
+            ComboBoxTerm.requestFocus();
+            showMessage("Kỳ học không được để trống.");
             return false;
         }
         return true;
-    }
-    
-    private boolean validateGPA() {
-        try {
-            Float gpa = Float.parseFloat(gpaField.getText().trim());
-            if (gpa < 0 || gpa > 10) {
-                gpaField.requestFocus();
-                showMessage("GPA không hợp lệ, gpa nên trong khoảng 0 đến 10.");
-                return false;
-            }
-        } catch (Exception e) {
-            gpaField.requestFocus();
-            showMessage("GPA không hợp lệ!");
-            return false;
-        }
-        return true;
-    }
-    
-    public void actionPerformed(ActionEvent e) {
-    }
-    
-    public void valueChanged(ListSelectionEvent e) {
-    }
-    
-    public void addAddStudentListener(ActionListener listener) {
-        addStudentBtn.addActionListener(listener);
-    }
-    
-    public void addEdiStudentListener(ActionListener listener) {
-        editStudentBtn.addActionListener(listener);
-    }
-    
-    public void addDeleteStudentListener(ActionListener listener) {
-        deleteStudentBtn.addActionListener(listener);
-    }
-    
-    public void addClearListener(ActionListener listener) {
-        clearBtn.addActionListener(listener);
-    }
-    
-    public void addSortStudentGPAListener(ActionListener listener) {
-        sortStudentGPABtn.addActionListener(listener);
-    }
-    
-    public void addSortStudentNameListener(ActionListener listener) {
-        sortStudentNameBtn.addActionListener(listener);
-    }
-    
-    public void addListStudentSelectionListener(ListSelectionListener listener) {
-        studentTable.getSelectionModel().addListSelectionListener(listener);
     }
 }
