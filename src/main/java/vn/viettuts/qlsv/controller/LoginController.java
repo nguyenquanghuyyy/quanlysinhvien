@@ -1,22 +1,25 @@
-package vn.viettuts.qlsv.controller;
+package qlsv.register.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import vn.viettuts.qlsv.dao.UserDao;
-import vn.viettuts.qlsv.entity.User;
-import vn.viettuts.qlsv.view.LoginView;
-import vn.viettuts.qlsv.view.StudentView;
+import qlsv.register.dao.UserDao;
+import qlsv.register.view.LoginView;
+import qlsv.register.view.OptionView;
+
+import qlsv.register.entity.User;
 
 public class LoginController {
-    private UserDao userDao;
-    private LoginView loginView;
-    private StudentView studentView;
+    private final UserDao userDao;
+    private final LoginView loginView;
+    private OptionView optionView;
     
-    public LoginController(LoginView view) {
-        this.loginView = view;
+    public LoginController(LoginView loginView) {
+        this.loginView = loginView;
         this.userDao = new UserDao();
-        view.addLoginListener(new LoginListener());
+        loginView.addLoginListener(new LoginListener());
+//        loginView.addEmailKeyPressed(new TextFieldEmailKeyPressed());
+//        loginView.addPasswordkeyPressed(new PasswordFieldKeyPressed());
     }
     
     public void showLoginView() {
@@ -26,21 +29,95 @@ public class LoginController {
     /**
      * Lớp LoginListener 
      * chứa cài đặt cho sự kiện click button "Login"
-     * 
-     * @author viettuts.vn
      */
     class LoginListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             User user = loginView.getUser();
-            if (userDao.checkUser(user)) {
-                // nếu đăng nhập thành công, mở màn hình quản lý sinh viên
-                studentView = new StudentView();
-                StudentController studentController = new StudentController(studentView);
-                studentController.showStudentView();
+            if (userDao.checkEmail(user) && userDao.checkPassword(user)) {
+                // nếu đăng nhập thành công, mở màn hình option
+                optionView = new OptionView();
+                OptionController optionController = new OptionController(optionView);
+                optionController.showOptionView();
                 loginView.setVisible(false);
-            } else {
-                loginView.showMessage("username hoặc password không đúng.");
+            } else if (!userDao.checkEmailIsEmpty(user)) {
+                loginView.EmailIsEmpty();
+            } else if (userDao.checkEmail(user) && !userDao.checkPasswordIsEmpty(user)) {
+                loginView.PasswordIsEmpty();
+            } else if (!userDao.checkEmail(user)) {
+                loginView.EmailErro();
+            } else if (userDao.checkEmail(user) && !userDao.checkPassword(user)) {
+                loginView.PasswordErro();
             }
         }
     }
+    
+//    class PasswordFieldKeyPressed implements KeyListener {
+//
+//        @Override
+//        public void keyTyped(KeyEvent e) {
+//        }
+//
+//        @Override
+//        public void keyPressed(KeyEvent e) {
+//            User user = loginView.getUser();
+//            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                if (userDao.checkEmail(user) && userDao.checkPassword(user)) {
+//                    // nếu đăng nhập thành công, mở màn hình option
+//                    optionView = new OptionView();
+//                    OptionController optionController = new OptionController(optionView);
+//                    optionController.showOptionView();
+//                    loginView.setVisible(false);
+//                } else if (!userDao.checkEmailIsEmpty(user)) {
+//                    loginView.EmailIsEmpty();
+//                } else if (userDao.checkEmail(user) && !userDao.checkPasswordIsEmpty(user)) {
+//                    loginView.PasswordIsEmpty();
+//                } else if (!userDao.checkEmail(user)) {
+//                    loginView.EmailErro();
+//                } else if (userDao.checkEmail(user) && !userDao.checkPassword(user)) {
+//                    loginView.PasswordErro();
+//                }
+//                
+//            }
+//        }
+//
+//        @Override
+//        public void keyReleased(KeyEvent e) {
+//        }
+//    }
+//    
+//    class TextFieldEmailKeyPressed implements KeyListener {
+//
+//        @Override
+//        public void keyTyped(KeyEvent e) {
+//        }
+//
+//        @Override
+//        public void keyPressed(KeyEvent e) {
+//            User user = loginView.getUser();
+//            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+//                if (userDao.checkEmail(user) && userDao.checkPassword(user)) {
+//                    // nếu đăng nhập thành công, mở màn hình option
+//                    optionView = new OptionView();
+//                    OptionController optionController = new OptionController(optionView);
+//                    optionController.showOptionView();
+//                    loginView.setVisible(false);
+//                } else if (!userDao.checkEmailIsEmpty(user)) {
+//                    loginView.EmailIsEmpty();
+//                } else if (userDao.checkEmail(user) && !userDao.checkPasswordIsEmpty(user)) {
+//                    loginView.PasswordIsEmpty();
+//                } else if (!userDao.checkEmail(user)) {
+//                    loginView.EmailErro();
+//                } else if (userDao.checkEmail(user) && !userDao.checkPassword(user)) {
+//                    loginView.PasswordErro();
+//                }
+//                
+//                loginView.getTextFieldEmail().requestFocusInWindow();
+//            }
+//        }
+//
+//        @Override
+//        public void keyReleased(KeyEvent e) {
+//        }
+//    }
 }

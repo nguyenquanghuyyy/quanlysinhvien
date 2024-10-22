@@ -1,31 +1,42 @@
-package vn.viettuts.qlsv.controller;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package qlsv.register.controller;
+
+import qlsv.register.dao.StudentDao;
+import qlsv.register.entity.Student;
+import qlsv.register.view.OptionView;
+import qlsv.register.view.StudentView;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
-
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import vn.viettuts.qlsv.dao.StudentDao;
-import vn.viettuts.qlsv.entity.Student;
-import vn.viettuts.qlsv.view.StudentView;
-
+/**
+ *
+ * @author PC
+ */
 public class StudentController {
-    private StudentDao studentDao;
-    private StudentView studentView;
+    private final StudentView studentView;
+    private OptionView optionView;
+    private final StudentDao studentDao;
 
-    public StudentController(StudentView view) {
-        this.studentView = view;
+    public StudentController(StudentView studentView) {
+        this.studentView = studentView;
         studentDao = new StudentDao();
-
-        view.addAddStudentListener(new AddStudentListener());
-        view.addEdiStudentListener(new EditStudentListener());
-        view.addDeleteStudentListener(new DeleteStudentListener());
-        view.addClearListener(new ClearStudentListener());
-        view.addSortStudentGPAListener(new SortStudentGPAListener());
-        view.addSortStudentNameListener(new SortStudentNameListener());
-        view.addListStudentSelectionListener(new ListStudentSelectionListener());
+        
+        studentView.addReturnListener(new ReturnListener());
+        studentView.addAddStudentListener(new AddStudentListener());
+        studentView.addListStudentSelectionListener(new ListStudentSelectionListener());
+        studentView.addClearListener(new ClearStudentListener());
+        studentView.addEditListener(new EditStudentListener());
+        studentView.addDeleteListener(new DeleteStudentListener());
+        studentView.addSortNameListener(new SortStudentNameListener());
+        studentView.addSearchListener(new SearchStudentListener());
+        studentView.addRefreshListener(new RefreshSearchListener());
     }
 
     public void showStudentView() {
@@ -34,107 +45,148 @@ public class StudentController {
         studentView.showListStudents(studentList);
     }
 
-    /**
-     * Lớp AddStudentListener 
-     * chứa cài đặt cho sự kiện click button "Add"
-     * 
-     * @author viettuts.vn
-     */
+    
+    class ReturnListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            optionView = new OptionView();
+            OptionController optionController = new OptionController(optionView);
+            optionController.showOptionView();
+            studentView.setVisible(false);
+        }
+    }
+    
     class AddStudentListener implements ActionListener {
+        
+        @Override
         public void actionPerformed(ActionEvent e) {
-            Student student = studentView.getStudentInfo();
-            if (student != null) {
-                studentDao.add(student);
-                studentView.showStudent(student);
-                studentView.showListStudents(studentDao.getListStudents());
-                studentView.showMessage("Thêm thành công!");
+            Student s = studentView.getStudentInfo();
+            
+            for (Student student : studentDao.getListStudents()) {
+                if (s.getID().equals(student.getID())) {
+                    studentView.showMessage("Mã sinh viên đã tồn tại");
+                }
             }
-        }
-    }
-
-    /**
-     * Lớp EditStudentListener 
-     * chứa cài đặt cho sự kiện click button "Edit"
-     * 
-     * @author viettuts.vn
-     */
-    class EditStudentListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            Student student = studentView.getStudentInfo();
-            if (student != null) {
-                studentDao.edit(student);
-                studentView.showStudent(student);
+            
+            if (s != null) {
+                studentDao.add(s);
                 studentView.showListStudents(studentDao.getListStudents());
-                studentView.showMessage("Cập nhật thành công!");
-            }
-        }
-    }
-
-    /**
-     * Lớp DeleteStudentListener 
-     * chứa cài đặt cho sự kiện click button "Delete"
-     * 
-     * @author viettuts.vn
-     */
-    class DeleteStudentListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            Student student = studentView.getStudentInfo();
-            if (student != null) {
-                studentDao.delete(student);
                 studentView.clearStudentInfo();
-                studentView.showListStudents(studentDao.getListStudents());
-                studentView.showMessage("Xóa thành công!");
+                studentView.showMessage("Thêm thành công");
             }
         }
     }
-
-    /**
-     * Lớp ClearStudentListener 
-     * chứa cài đặt cho sự kiện click button "Clear"
-     * 
-     * @author viettuts.vn
-     */
+    
+    class ListStudentSelectionListener implements ListSelectionListener {       
+        @Override
+        public void valueChanged(ListSelectionEvent e) {
+            studentView.fillStudentFromSelectedRow();
+        }
+    }
+    
     class ClearStudentListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             studentView.clearStudentInfo();
         }
     }
-
-    /**
-     * Lớp SortStudentGPAListener 
-     * chứa cài đặt cho sự kiện click button "Sort By GPA"
-     * 
-     * @author viettuts.vn
-     */
-    class SortStudentGPAListener implements ActionListener {
+    
+    class EditStudentListener implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
-            studentDao.sortStudentByGPA();
-            studentView.showListStudents(studentDao.getListStudents());
+            Student s = studentView.getStudentInfo();
+            if (s != null) {
+                studentDao. edit(s);
+                studentView.showListStudents(studentDao.getListStudents());
+                studentView.clearStudentInfo();
+                studentView.showMessage("Cập nhật thành công");
+            }
         }
     }
+    
+    class DeleteStudentListener implements ActionListener {
 
-    /**
-     * Lớp SortStudentGPAListener 
-     * chứa cài đặt cho sự kiện click button "Sort By Name"
-     * 
-     * @author viettuts.vn
-     */
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            Student s = studentView.getStudentInfo();
+            if (s != null) {
+                studentDao.delete(s);
+                studentView.showListStudents(studentDao.getListStudents());
+                studentView.clearStudentInfo();
+                studentView.showMessage("Xóa thành công");
+            }
+        }
+    }
+        
     class SortStudentNameListener implements ActionListener {
+        
+        @Override
         public void actionPerformed(ActionEvent e) {
             studentDao.sortStudentByName();
             studentView.showListStudents(studentDao.getListStudents());
         }
     }
+        
+    class SearchStudentListener implements ActionListener {
 
-    /**
-     * Lớp ListStudentSelectionListener 
-     * chứa cài đặt cho sự kiện chọn student trong bảng student
-     * 
-     * @author viettuts.vn
-     */
-    class ListStudentSelectionListener implements ListSelectionListener {
-        public void valueChanged(ListSelectionEvent e) {
-            studentView.fillStudentFromSelectedRow();
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if (studentView.getComboBoxSearch().equals("<none>")) {
+                studentView.showMessage("Chưa lựa chọn kiểu tìm kiếm");
+            }
+            
+            else {
+                switch (studentView.getComboBoxSearch()) {
+                    case "Tên sinh viên":
+                        if (studentDao.searchByName(studentView.getTextFieldSearch()).isEmpty()) {
+                            studentView.showListStudents(studentDao.getListStudents());
+                            studentView.showMessage("Không có kết quả phù hợp");
+                        } else {
+                            studentView.showListStudents(studentDao.searchByName(studentView.getTextFieldSearch()));
+                            studentView.clearStudentInfo();
+                        }
+                        break;
+                    case "Mã sinh viên":
+                        if (studentDao.searchByID(studentView.getTextFieldSearch()).isEmpty()) {
+                            studentView.showListStudents(studentDao.getListStudents());
+                            studentView.showMessage("Không có kết quả phù hợp");
+                        } else {
+                            studentView.showListStudents(studentDao.searchByID(studentView.getTextFieldSearch()));
+                            studentView.clearStudentInfo();
+                        }
+                        break;
+                    case "Chuyên ngành":
+                        if (studentDao.searchByMajor(studentView.getTextFieldSearch()).isEmpty()) {
+                            studentView.showListStudents(studentDao.getListStudents());
+                            studentView.showMessage("Không có kết quả phù hợp");
+                        } else {
+                            studentView.showListStudents(studentDao.searchByMajor(studentView.getTextFieldSearch()));
+                            studentView.clearStudentInfo();
+                        }
+                        break;
+                }
+                
+                if (studentView.getTextFieldSearch().equals("")) {
+                    studentView.showListStudents(studentDao.getListStudents());
+                    studentView.showMessage("Không có kết quả phù hợp");
+                }
+                
+                
+            }
         }
+    }
+    
+    class RefreshSearchListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            for (Student s : studentDao.getListStudents()) {
+                studentView.setTextFieldSearch("");
+                studentView.showListStudents(studentDao.getListStudents());
+                studentView.clearStudentInfo();
+            }
+        }
+        
     }
 }
