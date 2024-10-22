@@ -1,24 +1,32 @@
-package vn.viettuts.qlsv.entity;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package qlsv.register.entity;
 
+/**
+ *
+ * @author PC
+ */
 public class User {
-    private String userName;
+    private String email;
     private String password;
 
     public User() {
     }
 
-    public User(String userName, String password) {
+    public User(String userID, String password) {
         super();
-        this.userName = userName;
+        this.email = userID;
         this.password = password;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {

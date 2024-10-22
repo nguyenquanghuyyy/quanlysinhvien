@@ -1,42 +1,46 @@
-package vn.viettuts.qlsv.entity;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package qlsv.register.entity;
 
-import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement(name = "student")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Student implements Serializable {
-    private static final long serialVersionUID = 1L;
-    private int id;
+/**
+ *
+ * @author PC
+ */
+public class Student {
+    private String ID;
     private String name;
-    private byte age;
+    private String gender;
+    private String dob;
     private String address;
-    /* điểm trung bình của sinh viên */
-    private float gpa;
+    private String major;
+    private String term;
+    private int limitedCredit;
+    private int registedCredit;
+    private List<Subject> subject;
 
     public Student() {
+        subject = new ArrayList<>();
+        registedCredit = 0;
     }
 
-    public Student(int id, String name, byte age, String address, float gpa) {
-        super();
-        this.id = id;
+    public Student(String ID, String name, String gender, String dob, String address, String major, String term, int limitedCredit, int registedCredit, List<Subject> subject) {
+        this.ID = ID;
         this.name = name;
-        this.age = age;
+        this.gender = gender;
+        this.dob = dob;
         this.address = address;
-        this.gpa = gpa;
+        this.major = major;
+        this.term = term;
+        this.limitedCredit = limitedCredit;
+        this.registedCredit = registedCredit;
+        this.subject = subject;
     }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    
     public String getName() {
         return name;
     }
@@ -45,12 +49,28 @@ public class Student implements Serializable {
         this.name = name;
     }
 
-    public byte getAge() {
-        return age;
+    public String getID() {
+        return ID;
     }
 
-    public void setAge(byte age) {
-        this.age = age;
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    
+    public String getDob() {
+        return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 
     public String getAddress() {
@@ -61,11 +81,43 @@ public class Student implements Serializable {
         this.address = address;
     }
 
-    public float getGpa() {
-        return gpa;
+    public String getMajor() {
+        return major;
     }
 
-    public void setGpa(float gpa) {
-        this.gpa = gpa;
+    public void setMajor(String major) {
+        this.major = major;
+    }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public void setTerm(String term) {
+        this.term = term;
+    }
+
+    public int getLimitedCredit() {
+        return limitedCredit;
+    }
+
+    public void setLimitedCredit(int limitedCredit) {
+        this.limitedCredit = limitedCredit;
+    }
+
+    public int getRegistedCredit() {
+        return registedCredit;
+    }
+
+    public void setRegistedCredit(int registedCredit) {
+        this.registedCredit = registedCredit;
+    }
+
+    public List<Subject> getSubject() {
+        return subject;
+    }
+
+    public void setSubject(List<Subject> subject) {
+        this.subject = subject;
     }
 }
