@@ -1,4 +1,8 @@
-package vn.viettuts.qlsv.utils;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package qlsv.register.utils;
 
 import java.io.File;
 
@@ -7,16 +11,16 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
-public class FileUtils {
-
-    /**
+/**
      * Chuyển đổi đối tượng object về định dạng XML
      * Sau đo lưu vào fileName
      * 
+     * Dùng để đọc ghi file
      * @param fileName
      * @param object
      */
-    public static void writeXMLtoFile(String fileName, Object object) {
+public class FileUtils {
+     public static void writeXMLtoFile(String fileName, Object object) {
         try {
             // tạo đối tượng JAXB Context
             JAXBContext jaxbContext = JAXBContext.newInstance(object.getClass());
